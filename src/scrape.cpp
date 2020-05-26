@@ -8,9 +8,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define MD_API_CHAP  "https://mangadex.org/api/chapter/"
-#define MD_API_TITLE "https://mangadex.org/api/manga/"
-
 // Code stolen from: https://curl.haxx.se/libcurl/c/getinmemory.html and https://curl.haxx.se/libcurl/c/url2file.html
 
 struct mem_struct {

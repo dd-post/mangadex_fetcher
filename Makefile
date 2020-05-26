@@ -3,12 +3,15 @@ PROG = mangadex_fetcher
 CXX = g++
 
 LINKFLAGS = -lcurl
-CXXFLAGS = -g -Wall -std=c++11
+CXXFLAGS = -g -Wall -MD -std=c++11
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 all: $(PROG)
+
+%.o: %.c
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(PROG): $(OBJ)
 	$(CXX) $(LINKFLAGS) $(CXXFLAGS) -o $@ $^
@@ -16,5 +19,7 @@ $(PROG): $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -rf $(PROG) $(OBJ)
+	rm -rf $(PROG) $(OBJ) $(OBJ:.o=.d)
 
+
+-include $(OBJ:.o=.d)

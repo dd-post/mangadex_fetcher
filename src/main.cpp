@@ -1,6 +1,7 @@
 // C
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 // Curl
 #include<curl/curl.h>
@@ -11,12 +12,10 @@
 #include "arg.h"
 
 int main(int argc, char* argv[]) {
-    struct arguments parsed_args;
-    argp_parse(&argp, argc, argv, 0, 0, &parsed_args);
+    setenv(ARGP_HELP_FMT_EVAR, ARGP_HELP_FMT_FMT, 0);
 
-    // TODO either custom print help or setting env vars.
-
-
+    struct arg_struct parsed_args;
+    argp_parse(&arg_params, argc, argv, 0, nullptr, &parsed_args);
 
     //curl_global_init(CURL_GLOBAL_ALL);
     //nlohmann::json j = fetch_json("https://mangadex.org/api/manga/22369");
