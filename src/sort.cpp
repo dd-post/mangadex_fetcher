@@ -20,6 +20,14 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
             jit.value()["volume"] = "0";
         }
 
+        // Pad chapter to 4 interger digits.
+        uint8_t pad = 4;
+        size_t chap_pos = chap.find(".");
+        if (chap_pos != std::string::npos) pad -= chap_pos;
+        else pad -= chap.length();
+
+        chap = std::string(pad, '0') + chap;
+
         // Match language / group.
         if (!as.lang_code.empty() && lang != as.lang_code) continue;
         if (!as.group.empty()) {
@@ -31,15 +39,6 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
             // TODO: double check this.
             else if (sorted.contains(chap)) sorted.erase(chap);
         }
-
-
-        // Pad to 4 interger digits.
-        uint8_t pad = 4;
-        size_t chap_pos = chap.find(".");
-        if (chap_pos != std::string::npos) pad -= chap_pos;
-        else pad -= chap.length();
-
-        chap = std::string(pad, '0') + chap;
 
         // If title is empty, replace it with a place holder.
         if (jit.value()["title"].get<std::string>().empty()) {
@@ -63,17 +62,17 @@ bool print_chapters(nlohmann::json& j, struct arg_struct& as) {
     nlohmann::json sorted = j["sorted"];
 
     int idx = 0;
-    printf("%-5s | %-9s | %-10s | %-50s | %-20s | %-6s\n", "Idx", "Vol", "Chap", "Title", "Group", "Lang");
+    printf("%-5s | %-9s | %-10s | %-20s | %-6s | %-50s\n", "Idx", "Vol", "Chap", "Group", "Lang", "Title");
     printf("%s\n", std::string(120, '=').c_str());
 
     for (auto jit : j["sorted"].items()) {
         for (auto kit : jit.value().items()) {
-            printf("%5.5d | %9.9s | %10.10s | %-50.40s | %-20.30s | %-6.6s\n", idx,
+            printf("%5.5d | %9.9s | %10.10s | %-20.20s | %-6.6s | %-50.50s\n", idx,
                                                    kit.value()["volume"].get<std::string>().c_str(),
                                                    jit.key().c_str(),
-                                                   kit.value()["title"].get<std::string>().c_str(),
                                                    kit.value()["group_name"].get<std::string>().c_str(),
-                                                   kit.value()["lang_code"].get<std::string>().c_str());
+                                                   kit.value()["lang_code"].get<std::string>().c_str(),
+                                                   kit.value()["title"].get<std::string>().c_str());
             idx++;
         }
     }

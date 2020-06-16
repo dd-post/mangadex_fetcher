@@ -27,11 +27,8 @@ int main(int argc, char* argv[]) {
     print_chapters(j, parsed_args);
 
     //printf("%s\n", j.dump(4).c_str());
-
-
     //scrape_title(j, "gb");
-
-    ////scrape_image("https://s5.mangadex.org/data/2b1ae74e6fb4302b5d0fa3cb7cc1f9d2/x1.png", "x1.png");
+    //scrape_image("https://s5.mangadex.org/data/2b1ae74e6fb4302b5d0fa3cb7cc1f9d2/x1.png", "x1.png");
 
     // Cleanup.
     curl_global_cleanup();
