@@ -1,6 +1,9 @@
 #include "arg.h"
 #include "message.h"
 
+// C++
+#include <regex>
+
 error_t parse_opt(int key, char* arg, argp_state* state) {
     struct arg_struct* as = (struct arg_struct*)state->input;
 
@@ -68,16 +71,40 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             // Test our url.
             std::string in_url = std::string(arg);
 
-            // If this is a full url, chop off the ip and
-            if (in_url.find("://") != std::string::npos) {
+            // Use regex to pull out our title id.
+            if (std::regex_match(in_url, std::regex(MD_SITE_REGEX))) {
+                size_t url_pos = 0;
+                std::string token;
 
+                for (;;) {
+                    url_pos = in_url.find("/");
+                    if (url_pos == std::string::npos) break;
+                    token = in_url.substr(0, url_pos);
+
+                    if (std::regex_match(token, std::regex("[0-9]+"))) {
+                        in_url = token;
+                        break;
+                    }
+
+                    in_url.erase(0, url_pos + 1);
+                }
             }
+            // Otherwise this is an error.
+            else {
+                printf("Unable to parse URL, please check it for errors. You can use the full URL or just the title ID.\n");
+                return ARGP_KEY_ERROR;
+            }
+
+            as->url = MD_API_TITLE + in_url;
+
+            printf("Using API url: %s\n", as->url.c_str());
 
 
             break;
         }
         case ARGP_KEY_END: {
             if (state->arg_num < 1) argp_usage(state);
+            else as->valid = true;
             break;
         }
 

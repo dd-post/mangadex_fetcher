@@ -10,7 +10,7 @@
 #define ARGP_HELP_FMT_FMT  "rmargin=180, opt-doc-col=40, no-dup-args-note"
 
 //const char* argp_program_version = "mangadex_scrapper - v0.01";
-const char prog_doc[] = "Simple tool for scrapping manga from mangadex.org using their API (https://mangadex.org/api/). Supports writing to plain directories, pdf, cbz, or epub.";
+const char prog_doc[] = "Simple tool for scrapping manga from mangadex.org using their API (https://mangadex.org/api/). Supports writing to plain directories or cbz."; // add pdf and epub when possible
 static char args_doc[] = "URL";
 
 struct arg_struct {
@@ -25,6 +25,7 @@ struct arg_struct {
     bool by_volume = false;
     FILE* output = stdout;
     bool no_write = false;
+    bool valid = false;
 };
 
 const struct argp_option arg_options[] = {
@@ -36,7 +37,7 @@ const struct argp_option arg_options[] = {
   //{"volume-format",   'f', "FORMAT",      0,  "Alter the format of output name when saving as a volume. See --help format for more details",                      0},
   //{"chapter-format",  'c', "FORMAT",      0,  "Alter the format of output name when saving as a chapter. See --help format for more details",                     0},
     {"language",        'l', "LANG_CODE",   0,  "Fetch chapters only matching this language",                                                                       0},
-    {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, perfer this group's translation",                                  0},
+    {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation",                                  0},
     {"volume",          'v', nullptr,       0,  "Write out chapters in groups by volume",                                                                           0},
     {"quiet",           'q', nullptr,       0,  "Suppress all standard output",                                                                                     0},
     {"dry-run",         'D', nullptr,       0,  "Perform a dry run to display what directories will be created",                                                    0},
