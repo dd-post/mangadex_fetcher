@@ -2,7 +2,7 @@
 #include <stdarg.h>
 
 #define MD_SITE         "mangadex.org"
-#define MD_SITE_REGEX   "(https?:\/\/mangadex.org\/title\/[0-9]+((\/)|(\/[a-z\-]+\/?))?)|([0-9]+)"
+#define MD_SITE_REGEX   "(https?:\\/\\/mangadex.org\\/title\\/[0-9]+((\\/)|(\\/[a-z\\-]+\\/?))?)|([0-9]+)"
 #define MD_SITE_URL     "https://" MD_SITE "/"
 #define MD_API_URL      MD_SITE_URL "api/"
 #define MD_API_CHAP     MD_API_URL "chapter/"
