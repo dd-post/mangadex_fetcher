@@ -7,7 +7,7 @@ void pquit(int ret, const char* format, ...) {
     va_list vp;
     va_start(vp, format);
 
-    vprintf(format, vp);
+    vfprintf(stderr, format, vp);
     va_end(vp);
 
     exit(ret);

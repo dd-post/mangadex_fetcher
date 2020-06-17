@@ -59,8 +59,6 @@ nlohmann::json fetch_json(std::string url) {
 
     handle = curl_easy_init();
     curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION, &progress_callback);
-    curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L);
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, &write_mem_callback);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void*)(&dl_chunk));
 
@@ -120,11 +118,17 @@ void scrape_chapter(nlohmann::json& j) {
     std::string chap_server = j["server"];
     nlohmann::json pg_array = j["page_array"];
 
+    int i = 0;
     for (auto jit : pg_array.items()) {
         std::string fn = jit.value().get<std::string>();
         std::string image_url = chap_server + chap_hash + "/" + fn;
 
-        printf("Downloading: %s... ----kB", image_url.c_str());
+        // Replace image name with padded number.
+        std::string pg_num = std::to_string(i);
+        if (pg_num.length() <= 3) pg_num = std::string(3 - pg_num.length(), '0') + pg_num;
+        fn.replace(0, fn.find('.'), pg_num);
+
+        printf("Downloading: %s -> %s... ----kB", image_url.c_str(), fn.c_str());
         fflush(stdout);
 
         // Try to scrape 5 times before moving on.
@@ -139,6 +143,8 @@ void scrape_chapter(nlohmann::json& j) {
             usleep(100000);
             fflush(stdout);
         }
+
+        i++;
     }
 }
 
@@ -158,11 +164,20 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
     chdir(as.output_path.c_str());
 
     std::string cur_vol;
+    int c_idx = 0;
+
+    if (as.start_chap == -1) as.start_chap = 0;
+    if (as.end_chap == -1) as.end_chap = j["count"];
 
     for (auto jit : j["sorted"].items()) {
         std::string chap = jit.key();
 
         for (auto kit : jit.value().items()) {
+            // Handle start/end idx.
+            if (c_idx < as.start_chap) continue;
+            if (c_idx > as.end_chap) continue;
+            c_idx++;
+
             std::string chap_dir = chap + " - " + kit.value()["group_name"].get<std::string>();
             // Sanitize the file name.
             std::replace(chap_dir.begin(), chap_dir.end(), '/', '_');
@@ -171,7 +186,7 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
             if (as.by_volume) {
                 std::string vol = kit.value()["volume"];
                 // Pad to 2.
-                vol = std::string(2 - vol.length(), '0') + vol;
+                if (vol.length() <= 2) vol = std::string(2 - vol.length(), '0') + vol;
                 if (cur_vol != vol) {
                     if (!cur_vol.empty()) chdir("..");
                     if (mkdir(vol.c_str(), 0755) < 0) {
@@ -188,7 +203,7 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
             }
             chdir(chap_dir.c_str());
 
-            printf("Fetching chapter: %s\n", chap_dir.c_str());
+            printf("\nFetching chapter: %s\n", chap_dir.c_str());
 
             // Generate the URL, scape the info, and pass to scrape_chapter().
             std::string chap_api = MD_API_CHAP + kit.key();

@@ -9,11 +9,15 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
 
     switch (key) {
         case 's': {
+            if (as->start_chap != -1) {
+                pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
+            }
+
             char* endptr;
             int chap = strtol(arg, &endptr, 10);
 
-            if ((chap == 0 && errno != 0) || (*endptr != '\0')) {
-                pquit(128, "Unable to read interger for start chapter. Did you make a typo?\n");
+            if ((chap == 0 && errno != 0) || (*endptr != '\0') || (chap < 0)) {
+                pquit(128, "Unable to read interger for start chapter.\n");
             }
 
             as->start_chap = chap;
@@ -21,16 +25,37 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             break;
         }
         case 'e': {
+            if (as->start_chap != -1) {
+                pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
+            }
+
             char* endptr;
             int chap = strtol(arg, &endptr, 10);
 
-            if ((chap == 0 && errno != 0) || (*endptr != '\0')) {
-                pquit(128, "Unable to read interger for end chapter. Did you make a typo?\n");
+            if ((chap == 0 && errno != 0) || (*endptr != '\0') || (chap < 0)) {
+                pquit(128, "Unable to read interger for end chapter.\n");
             }
 
             as->end_chap = chap;
 
             break;
+        }
+        case 'S': {
+            if (as->start_chap != -1) {
+                pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
+            }
+
+            char* endptr;
+            int chap = strtol(arg, &endptr, 10);
+
+            if ((chap == 0 && errno != 0) || (*endptr != '\0') || (chap < 0)) {
+                pquit(128, "Unable to read interger for single chapter.\n");
+            }
+
+            as->start_chap = as->end_chap = chap;
+
+            break;
+
         }
         case 'L': {
             as->list_chap = true;
@@ -42,6 +67,15 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
         }
         case 'f': {
             as->output_type = std::string(arg);
+            break;
+        }
+        case 't': {
+            as->output_type = std::string(arg);
+
+            if (as->output_type != "cbz" || as->output_type != "dir") {
+                pquit(128, "Unknown output type '%s',\n", arg);
+            }
+
             break;
         }
         case 'l': {
@@ -57,15 +91,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             break;
         }
         case 'q': {
-            as->output = nullptr;
-            break;
-        }
-        case 'D': {
-            as->no_write = true;
-            break;
-        }
-        case 'k': {
-            as->keep_temp = true;
+            fclose(stdout);
             break;
         }
 
@@ -95,13 +121,11 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             }
             // Otherwise this is an error.
             else {
-                printf("Unable to parse URL, please check it for errors. You can use the full URL or just the title ID.\n");
+                pquit(128, "Unable to parse URL, please check it for errors. You can use the full URL or just the title ID.\n");
                 return ARGP_KEY_ERROR;
             }
 
             as->url = MD_API_TITLE + in_url;
-
-            printf("Using API url: %s\n", as->url.c_str());
 
 
             break;
