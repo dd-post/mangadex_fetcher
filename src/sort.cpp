@@ -8,7 +8,7 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
 
     uint64_t chap_count = 0;
 
-    for (nlohmann::json::iterator jit = md_chap.begin(); jit != md_chap.end(); jit++) {
+    for (auto jit : md_chap.items()) {
         // TODO: change how json is accessed. This will throw an exception if the key does not exist.
         std::string chap = jit.value()["chapter"];
         std::string group = jit.value()["group_name"];

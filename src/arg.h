@@ -25,15 +25,16 @@ struct arg_struct {
     bool by_volume = false;
     FILE* output = stdout;
     bool no_write = false;
+    bool keep_temp = false;
     bool valid = false;
 };
 
 const struct argp_option arg_options[] = {
     {"start-chapter",   's', "START_CHAP",  0,  "Specify the chapter to start fetch from. Use indices from --list-chapters output",                                 0},
     {"end-chapter",     'e', "END_CHAP",    0,  "Specify the chapter to end fetch at. Use indices from --list-chapters output",                                     0},
-    {"list-chapters",   'L', nullptr,       0,  "List all chapters and generate indices to reference them. Use --language to restrict output to a language",        0},
-    {"output-dir",      'd', "PATH",        0,  "Change the output directory for the downloaded chapters to PATH. Defaults to current working directory",           0},
-    {"output-type",     'f', "TYPE",        0,  "Define how output will be saved. TYPE can be folder (default), cbz, pdf, or epub",                                 0},
+    {"list-chapters",   'L', nullptr,       0,  "List all chapters and generate indices to reference them. Use --language and/or --group to narrow down output",    0},
+    {"output-dir",      'd', "PATH",        0,  "Change the output directory for the downloaded chapters to PATH. Defaults to name of manga",                       0},
+    {"output-type",     't', "TYPE",        0,  "Define how output will be saved. TYPE can be folder (default), cbz, pdf, or epub",                                 0},
   //{"volume-format",   'f', "FORMAT",      0,  "Alter the format of output name when saving as a volume. See --help format for more details",                      0},
   //{"chapter-format",  'c', "FORMAT",      0,  "Alter the format of output name when saving as a chapter. See --help format for more details",                     0},
     {"language",        'l', "LANG_CODE",   0,  "Fetch chapters only matching this language",                                                                       0},
@@ -41,6 +42,7 @@ const struct argp_option arg_options[] = {
     {"volume",          'v', nullptr,       0,  "Write out chapters in groups by volume",                                                                           0},
     {"quiet",           'q', nullptr,       0,  "Suppress all standard output",                                                                                     0},
     {"dry-run",         'D', nullptr,       0,  "Perform a dry run to display what directories will be created",                                                    0},
+    {"keep-files",      'k', nullptr,       0,  "Keep any temporary files",                                                                                         0},
     { 0 }
 };
 

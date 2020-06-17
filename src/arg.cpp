@@ -64,6 +64,10 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             as->no_write = true;
             break;
         }
+        case 'k': {
+            as->keep_temp = true;
+            break;
+        }
 
         case ARGP_KEY_ARG: {
             if (state->arg_num > 1) argp_usage(state);
