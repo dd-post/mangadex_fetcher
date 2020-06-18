@@ -29,8 +29,12 @@ void create_zip(std::string dir, std::string filename) {
 
     // Recurse over directory.
     for (const auto& dir_ent : std::filesystem::recursive_directory_iterator(dir)) {
+        // Don't attempt to archive the archive.
+        if (dir_ent.path().string().erase(0, 2) == filename) continue;
+
         // If dir, skip it.
         stat(dir_ent.path().c_str(), &stat_buf);
+
         if (S_ISDIR(stat_buf.st_mode)) continue;
         printf("%s\n", dir_ent.path().c_str());
 

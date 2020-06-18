@@ -9,7 +9,7 @@ nlohmann::json fetch_json(std::string url);
 int scrape_image(std::string url, std::string filename);
 
 // Get a full chapter from its Json.
-void scrape_chapter(nlohmann::json& j);
+bool scrape_chapter(nlohmann::json& j);
 
 // Get a full manga from its Json.
 void scrape_title(nlohmann::json& j, struct arg_struct& as);

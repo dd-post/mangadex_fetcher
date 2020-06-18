@@ -59,26 +59,29 @@ int main(int argc, char* argv[]) {
                 struct stat stat_buf;
 
                 // If there was no dl, then check for existing volumes. No need to rebuild if there's nothing new.
-                if (j["successful_dl"] == false) {
-                    // If file exists, don't bother redownloading it.
-                    if (!stat(vol_cbz.c_str(), &stat_buf)) {
-                        if (stat_buf.st_size != 0) {
-                            printf("Skipping '%s': file already exists.\n", vol_cbz.c_str());
-                            continue;
-                        }
-                    }
+                if (j["successful_dl"] == false && !stat(vol_cbz.c_str(), &stat_buf) && stat_buf.st_size != 0) {
+                    printf("Skipping '%s': file already exists.\n", vol_cbz.c_str());
+                    continue;
                 }
 
                 create_zip(vol, vol_cbz);
             }
         }
-        else create_zip(".", manga_title + ".cbz");
-        // Call to libarchive stuff.
+        else {
+            std::string cbz = manga_title + ".cbz";
+            struct stat stat_buf;
+
+            if (j["successful_dl"] == false && !stat(cbz.c_str(), &stat_buf) && stat_buf.st_size != 0) {
+                printf("Skipping '%s': file already exists.\n", cbz.c_str());
+            }
+            else create_zip(".", cbz);
+        }
     }
+
+    printf("\nFinished download of title '%s'.\n\n", manga_title.c_str());
 
     cleanup:
     curl_global_cleanup();
 
-    printf("\nFinished download of title '%s'.\n\n", manga_title.c_str());
     return 0;
 }

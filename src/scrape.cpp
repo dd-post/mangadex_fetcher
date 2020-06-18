@@ -117,10 +117,12 @@ int scrape_image(std::string url, std::string filename) {
 }
 
 
-void scrape_chapter(nlohmann::json& j) {
+bool scrape_chapter(nlohmann::json& j) {
     std::string chap_hash   = j["hash"];
     std::string chap_server = j["server"];
     nlohmann::json pg_array = j["page_array"];
+    bool was_dl = false;
+
 
     int i = 0;
     for (auto jit : pg_array.items()) {
@@ -146,9 +148,8 @@ void scrape_chapter(nlohmann::json& j) {
             printf(": OK.\n");
             usleep(100000);
             fflush(stdout);
-
-            // Mark that something was downloaded to trigger rebuild of archives.
-            j["successful_dl"] = true;
+            // Mark that a dl occured.
+            was_dl = true;
         }
         else if (ret == -1) {
             pquit(128, "\nFailed to get %s, Mangadex might be down. Please try again later.\n\n", image_url.c_str());
@@ -156,6 +157,8 @@ void scrape_chapter(nlohmann::json& j) {
 
         i++;
     }
+
+    return was_dl;
 }
 
 void scrape_title(nlohmann::json& j, arg_struct& as) {
@@ -221,10 +224,13 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
             // Generate the URL, scape the info, and pass to scrape_chapter().
             std::string chap_api = MD_API_CHAP + kit.key();
             nlohmann::json chap_json = fetch_json(chap_api);
-            scrape_chapter(chap_json);
+
+            // Mark that something was downloaded to trigger rebuild of archives.
+            if (scrape_chapter(chap_json)) j["successful_dl"] = true;
 
             chdir("..");
         }
+
     }
 
     if (!cur_vol.empty()) chdir("..");
