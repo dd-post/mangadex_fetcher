@@ -62,14 +62,18 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             break;
         }
         case 'd': {
+            if (!as->output_path.empty()) {
+                pquit(128, "--output-dir has be specified two or more times. Please remove the extra specifications.\n");
+            }
+
             as->output_path = std::string(arg);
             break;
         }
-        case 'f': {
-            as->output_type = std::string(arg);
-            break;
-        }
         case 't': {
+            if (!as->output_type.empty()) {
+                pquit(128, "--output-type has be specified two or more times. Please remove the extra specifications.\n");
+            }
+
             as->output_type = std::string(arg);
 
             if (as->output_type != "cbz" && as->output_type != "dir") {
@@ -79,10 +83,22 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             break;
         }
         case 'l': {
+            if (!as->lang_code.empty()) {
+                pquit(128, "--language has be specified two or more times. Please remove the extra specifications.\n");
+            }
+
             as->lang_code = std::string(arg);
             break;
         }
         case 'g': {
+            if (!as->group.empty()) {
+                pquit(128, "--group has be specified two or more times. Please remove the extra specifications.\n");
+            }
+
+            if (as->all_scans) {
+                pquit(128, "--all-groups are --group mutually exclusive. Please remove one of these options.\n");
+            }
+
             as->group = std::string(arg);
             break;
         }
@@ -92,6 +108,14 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
         }
         case 'q': {
             fclose(stdout);
+            break;
+        }
+        case 'A': {
+            if (!as->group.empty()) {
+                pquit(128, "--all-groups are --group mutually exclusive. Please remove one of these options.\n");
+            }
+
+            as->all_scans = true;
             break;
         }
 
