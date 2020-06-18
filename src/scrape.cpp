@@ -143,6 +143,9 @@ void scrape_chapter(nlohmann::json& j) {
             usleep(100000);
             fflush(stdout);
         }
+        else if (ret == -1) {
+            pquit(128, "\nFailed to get %s, Mangadex might be down. Please try again later.\n\n", image_url.c_str());
+        }
 
         i++;
     }
@@ -194,6 +197,8 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
                     }
                     chdir(vol.c_str());
                     cur_vol = vol;
+
+                    j["volumes"].push_back(vol);
                 }
             }
 
@@ -212,9 +217,7 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
 
             chdir("..");
         }
-
     }
 
-    chdir("..");
     if (!cur_vol.empty()) chdir("..");
 }

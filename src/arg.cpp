@@ -25,7 +25,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             break;
         }
         case 'e': {
-            if (as->start_chap != -1) {
+            if (as->end_chap != -1) {
                 pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
             }
 
@@ -72,7 +72,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
         case 't': {
             as->output_type = std::string(arg);
 
-            if (as->output_type != "cbz" || as->output_type != "dir") {
+            if (as->output_type != "cbz" && as->output_type != "dir") {
                 pquit(128, "Unknown output type '%s',\n", arg);
             }
 

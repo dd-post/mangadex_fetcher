@@ -2,8 +2,8 @@ PROG = mangadex_fetcher
 
 CXX = g++
 
-LINKFLAGS = -lcurl
-CXXFLAGS = -g -Wall -MD -std=c++11
+LINKFLAGS = -lcurl -larchive
+CXXFLAGS = -g -Wall -MD -std=c++17
 
 SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
