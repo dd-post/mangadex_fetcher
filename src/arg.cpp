@@ -95,10 +95,6 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
                 pquit(128, "--group has be specified two or more times. Please remove the extra specifications.\n");
             }
 
-            if (as->all_scans) {
-                pquit(128, "--all-groups are --group mutually exclusive. Please remove one of these options.\n");
-            }
-
             as->group = std::string(arg);
             break;
         }
@@ -110,12 +106,8 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             fclose(stdout);
             break;
         }
-        case 'A': {
-            if (!as->group.empty()) {
-                pquit(128, "--all-groups are --group mutually exclusive. Please remove one of these options.\n");
-            }
-
-            as->all_scans = true;
+        case 'O': {
+            as->one_scan = true;
             break;
         }
 

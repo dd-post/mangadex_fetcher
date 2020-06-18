@@ -39,8 +39,8 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
             // TODO: double check this.
             else if (sorted.contains(chap)) sorted.erase(chap);
         }
-        // If a dl of all groups has been not be activated, replace any chapters with this newer chaper.
-        else if (!as.all_scans) {
+        // If a dl of one group has been been activated, replace any chapters with this newer chapter.
+        else if (as.one_scan) {
             if (sorted.contains(chap)) sorted.erase(chap);
         }
 

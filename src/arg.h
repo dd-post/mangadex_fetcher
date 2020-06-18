@@ -24,7 +24,7 @@ struct arg_struct {
     std::string group;
     bool by_volume = false;
     bool valid = false;
-    bool all_scans = false;
+    bool one_scan = false;
 };
 
 const struct argp_option arg_options[] = {
@@ -40,7 +40,7 @@ const struct argp_option arg_options[] = {
     {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation",                                  0},
     {"volume",          'v', nullptr,       0,  "Write out chapters in groups by volume",                                                                           0},
     {"quiet",           'q', nullptr,       0,  "Suppress all standard output",                                                                                     0},
-    {"all-groups",      'A', nullptr,       0,  "Get chapters from all groups rather than the most recent one",                                                     0},
+    {"one-group",       'O', nullptr,       0,  "Get only one version of a chapter, ignoring any duplicates by other groups. Use --language and/or --group to narrow down output", 0},
   //{"dry-run",         'D', nullptr,       0,  "Perform a dry run to display what directories will be created",                                                    0},
   //{"keep-files",      'k', nullptr,       0,  "Keep any temporary files",                                                                                         0}, // TODO: deleting anything is a potential hazard.
     { 0 }
