@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <signal.h>
 
 // C++
 #include <filesystem>
@@ -15,9 +17,13 @@
 #include "sort.h"
 #include "cbz.h"
 #include "arg.h"
+#include "sig.h"
+
+std::string current_file = std::string();
 
 int main(int argc, char* argv[]) {
     setenv(ARGP_HELP_FMT_EVAR, ARGP_HELP_FMT_FMT, 0);
+    signal(SIGINT, &catch_sigint);
 
     struct arg_struct parsed_args;
     argp_parse(&arg_params, argc, argv, 0, nullptr, &parsed_args);
@@ -47,9 +53,23 @@ int main(int argc, char* argv[]) {
         if (parsed_args.by_volume) {
             for (auto jit : j["volumes"].items()) {
                 std::string vol = jit.value();
+                std::string vol_cbz = manga_title + " - Volume " + vol + ".cbz";
                 printf("\nPackaging volume: %s\n", vol.c_str());
 
-                create_zip(vol, manga_title + " - Volume " + vol + ".cbz");
+                struct stat stat_buf;
+
+                // If there was no dl, then check for existing volumes. No need to rebuild if there's nothing new.
+                if (j["successful_dl"] == false) {
+                    // If file exists, don't bother redownloading it.
+                    if (!stat(vol_cbz.c_str(), &stat_buf)) {
+                        if (stat_buf.st_size != 0) {
+                            printf("Skipping '%s': file already exists.\n", vol_cbz.c_str());
+                            continue;
+                        }
+                    }
+                }
+
+                create_zip(vol, vol_cbz);
             }
         }
         else create_zip(".", manga_title + ".cbz");

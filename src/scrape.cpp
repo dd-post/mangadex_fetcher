@@ -1,6 +1,7 @@
 #include "scrape.h"
 #include "message.h"
 #include "sort.h"
+#include "sig.h"
 
 // Curl
 #include <curl/curl.h>
@@ -41,7 +42,7 @@ size_t write_file_callback(void* data, size_t size, size_t nmemb, void* userp) {
 }
 
 int progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
-    printf("\b\b\b\b\b\b%4ldkB", dltotal / 1000);
+    printf("\b\b\b\b\b\b\b\b%5ld kB", dlnow / 1000);
     fflush(stdout);
 
     return 0;
@@ -89,6 +90,7 @@ int scrape_image(std::string url, std::string filename) {
     }
 
     fptr = fopen(filename.c_str(), "wb");
+    current_file = filename;
     if (!fptr) return -1;
 
     handle = curl_easy_init();
@@ -109,6 +111,8 @@ int scrape_image(std::string url, std::string filename) {
     curl_easy_cleanup(handle);
     fclose(fptr);
 
+    current_file.clear();
+
     return ret;
 }
 
@@ -128,7 +132,7 @@ void scrape_chapter(nlohmann::json& j) {
         if (pg_num.length() <= 3) pg_num = std::string(3 - pg_num.length(), '0') + pg_num;
         fn.replace(0, fn.find('.'), pg_num);
 
-        printf("Downloading: %s -> %s... ----kB", image_url.c_str(), fn.c_str());
+        printf("Downloading: %s -> %s... ----- kB", image_url.c_str(), fn.c_str());
         fflush(stdout);
 
         // Try to scrape 5 times before moving on.
@@ -139,9 +143,12 @@ void scrape_chapter(nlohmann::json& j) {
         }
 
         if (ret == 0) {
-            printf(": Done.\n");
+            printf(": OK.\n");
             usleep(100000);
             fflush(stdout);
+
+            // Mark that something was downloaded to trigger rebuild of archives.
+            j["successful_dl"] = true;
         }
         else if (ret == -1) {
             pquit(128, "\nFailed to get %s, Mangadex might be down. Please try again later.\n\n", image_url.c_str());
@@ -153,6 +160,7 @@ void scrape_chapter(nlohmann::json& j) {
 
 void scrape_title(nlohmann::json& j, arg_struct& as) {
     if (as.output_path.empty()) as.output_path = j["manga"]["title"];
+    j["successful_dl"] = false;
 
     // If this title has not been sorted, sort it!
     if (!j.contains("sorted")) {

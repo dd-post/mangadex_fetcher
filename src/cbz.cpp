@@ -1,5 +1,6 @@
 #include "cbz.h"
 #include "message.h"
+#include "sig.h"
 
 #include <fcntl.h>
 
@@ -12,6 +13,7 @@
 #include <archive_entry.h>
 
 void create_zip(std::string dir, std::string filename) {
+    current_file = filename;
     struct archive* a;
     struct archive_entry* ae;
     struct stat stat_buf;
@@ -60,4 +62,6 @@ void create_zip(std::string dir, std::string filename) {
     free(buf);
     archive_write_close(a);
     archive_write_free(a);
+
+    current_file.clear();
 }
