@@ -4,8 +4,6 @@ A simple tool for scrapping from mangadex.org using their [API](https://mangadex
 
 ### Building
 ---
-Before starting, it should be pointed out that this was developed for Linux machines. It is likely that you can get this working on Windows by running it in the subsystem or by replacing Linux-specific code, but I have nothing to check that on.
-
 *mangadex_fetcher* requires standard `c++17` and 4 dependencies:
 
 - [nlohmann::json](https://github.com/nlohmann/json)
@@ -18,7 +16,7 @@ These libraries should be available in your distribution's package manager if th
 Once the dependencies are squared away, do the dance:
 
 ``` bash
-$ git clone https://github.com/dd_/mangadex_fetcher.git
+$ git clone https://github.com/dd-post/mangadex_fetcher.git
 $ cd mangadex_fetcher
 $ ./configure
 $ make
@@ -29,7 +27,7 @@ At this point *mangadex_fetcher* should be ready to use.
 
 ### Usage
 ---
-The program supplies some basic help info to help get you started:
+The program supplies some basic info to help get you started:
 
 ``` bash
 $ mangadex_fetcher -?
@@ -119,7 +117,7 @@ The conflict is resolved. Unresolved conflicts are not fatal however. If left as
 
 Other times, we only want one version of the chapter and don't particularly care which scanlator it comes from. In these cases, use the `--one-group` or `-O` option. This will simply take the most recent version of any chapter.
 
-Lastly, sometimes when we wish to only download a segment of the chapters. This is where the `--start-chapter` and `--end-chapter` (or `-s` and `-e` respectively)  come into play. Using the indices from the left most column, we can specify where we should start and where we should end. This will not affect the listing, but will cause the downloader to skip any chapters that do not fall within this range. Be careful to use the indices and not the actual chapter number as these numbers are NOT equivalent. If only a single chapter is desired, use the `--single-chapter` or `-S` option to specify that chapter. This is equivalent to using `-s` and `-e` with the same index.
+Lastly, it is possible to only download a segment of the chapters using `--start-chapter` and `--end-chapter` (or `-s` and `-e` respectively). Using the indices from the left most column, we can specify where we should start and where we should end. This will not affect the listing, but will cause the downloader to skip any chapters that do not fall within this range. Be careful to use the indices and not the actual chapter number as these numbers are NOT equivalent. If only a single chapter is desired, use the `--single-chapter` or `-S` option to specify that chapter. This is equivalent to using `-s` and `-e` with the same index.
 
 #### Example: Downloading
 Once we have the listing of the chapters we want, it is time to download them. To perform the download, simply remove the `-L` flag from the command. This will begin the download process:
@@ -151,9 +149,9 @@ Jahy-sama wa Kujikenai!/
 (....)
 ```
 
-We can also alter the type of output generated with the `--output-type` or `-t` option. Currently, the only available option other than the default `dir` is `cbz`, which will package the downloaded files in `.cbz` archives. When combined with `-v` this will generate a number of archives, one for each volume. This option is ideal for transferring to an e-reader or tablet for reading later.
+It is possible to alter the type of output generated with the `--output-type` or `-t` option. Currently, the only available option other than the default `dir` is `cbz`, which will package the downloaded files in `.cbz` archives. When combined with `-v` this will generate a number of archives, one for each volume. This option is ideal for transferring to an e-reader or tablet for reading later.
 
-Combining all these, the following will download all English chapters with a preference group for `Orchesc/a/ns`, organize them by volume, and create `.cbz` archives from the results:
+Combining all these, the following will download all English chapters with a preference for translation group `Orchesc/a/ns`, organize them by volume, and create `.cbz` archives from the results:
 
 ``` bash
 $ mangadex_fetcher -l gb -g Orchesc/a/ns -v -t cbz https://mangadex.org/title/22369/jahy-sama-wa-kujikenai
@@ -185,12 +183,14 @@ Packaging volume: 00
 Finished download of title 'Jahy-sama wa Kujikenai!'.
 ```
 
-Finally, it should be noted that none of the above operations will overwrite any existing data. To force a redownload or a rebuild of the `.cbz` archives, delete the files which need to be removed manually.
+Finally, it should be noted that none of the above operations will overwrite any existing data. To force a redownload or a rebuild of the `.cbz` archives, delete the files which need to be replaced manually.
 
 ### Miscellaneous Topics
 ---
  - Thanks to all library developers for creating such useful tools.
  - Additional thanks to MangaDex for making their API public. If you've got an extra PC and the bandwidth, please support their [MangaDex@Home Project](https://mangadex.org/thread/262074).
  - If you find a bug or would like to request a feature, please create an issue.
- - For anyone who looks at the code, sorry for the mess. It's like a garbled mixure of C and C++.
+ - For anyone who looks at the code, sorry for the mess. It's like a garbled mixture of C and C++.
+ - It should be pointed out that this was developed for Linux machines. It is likely that you can get this working on Windows by running it in WSL or by replacing Linux-specific for Windows code, but I have nothing to check that on.
+
 
