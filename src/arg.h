@@ -42,7 +42,7 @@ const struct argp_option arg_options[] = {
     {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation. Can be specified multiple times to form a priority list", 0},
     {"volume",          'v', nullptr,       0,  "Write out chapters in groups by volume",                                                                           0},
     {"quiet",           'q', nullptr,       0,  "Suppress all standard output",                                                                                     0},
-    {"one-group",       'O', nullptr,       0,  "Get only the most recent version of a chapter. Use --language to narrow down output",                              0},
+    {"most-recent",     'r', nullptr,       0,  "Get only the most recent version of a chapter. Use --language to narrow down output",                              0},
     {"force",           'f', nullptr,       0,  "Force overwrites of files. Be careful with this option as it will overwrite files if they share the same name",    0},
   //{"dry-run",         'D', nullptr,       0,  "Perform a dry run to display what directories will be created",                                                    0},
   //{"keep-files",      'k', nullptr,       0,  "Keep any temporary files",                                                                                         0}, // TODO: deleting anything is a potential hazard.

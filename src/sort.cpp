@@ -126,7 +126,7 @@ bool print_chapters(nlohmann::json& j, struct arg_struct& as) {
     nlohmann::json sorted = j["sorted"];
 
     int idx = 0;
-    printf("%-5s | %-9s | %-10s | %-20s | %-6s | %-50s\n", "Idx", "Vol", "Chap", "Group", "Lang", "Title");
+    printf("\n%-5s | %-9s | %-10s | %-20s | %-6s | %-50s\n", "Idx", "Vol", "Chap", "Group", "Lang", "Title");
     printf("%s\n", std::string(120, '=').c_str());
 
     for (auto jit : j["sorted"].items()) {

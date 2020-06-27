@@ -134,7 +134,8 @@ bool scrape_chapter(nlohmann::json& j, bool overwrite) {
         if (pg_num.length() <= 3) pg_num = std::string(3 - pg_num.length(), '0') + pg_num;
         fn.replace(0, fn.find('.'), pg_num);
 
-        printf("Downloading: %s -> %s... ----- kB", image_url.c_str(), fn.c_str());
+        //printf("Downloading: %s -> %s... ----- kB", image_url.c_str(), fn.c_str());
+        printf("Downloading: %80.80s%s -> %s ----- kB", image_url.c_str(), (image_url.length() > 80) ? "..." : "", fn.c_str());
         fflush(stdout);
 
         // Try to scrape 5 times before moving on.

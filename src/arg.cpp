@@ -102,7 +102,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             fclose(stdout);
             break;
         }
-        case 'O': {
+        case 'r': {
             as->one_scan = true;
             break;
         }

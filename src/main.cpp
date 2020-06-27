@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     std::replace(manga_title.begin(), manga_title.end(), '/', '_');
     j["manga"]["title"] = manga_title;
 
-    printf("Title: %s\n\n", manga_title.c_str());
+    printf("Title: %s\n", manga_title.c_str());
 
     if (parsed_args.list_chap) {
         print_chapters(j, parsed_args);
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
                 struct stat stat_buf;
 
                 // If there was no dl, then check for existing volumes. No need to rebuild if there's nothing new.
-                if (j["successful_dl"] == false && !stat(vol_cbz.c_str(), &stat_buf) && stat_buf.st_size != 0) {
+                if (j["successful_dl"] == false && !stat(vol_cbz.c_str(), &stat_buf) && stat_buf.st_size != 0 && !parsed_args.force) {
                     printf("Skipping '%s': file already exists.\n", vol_cbz.c_str());
                     continue;
                 }
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
             std::string cbz = manga_title + ".cbz";
             struct stat stat_buf;
 
-            if (j["successful_dl"] == false && !stat(cbz.c_str(), &stat_buf) && stat_buf.st_size != 0) {
+            if (j["successful_dl"] == false && !stat(cbz.c_str(), &stat_buf) && stat_buf.st_size != 0 && !parsed_args.force) {
                 printf("Skipping '%s': file already exists.\n", cbz.c_str());
             }
             else create_zip(".", cbz);

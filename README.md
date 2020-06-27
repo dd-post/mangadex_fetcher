@@ -9,7 +9,6 @@ A simple tool for scrapping from mangadex.org using their [API](https://mangadex
 - [nlohmann::json](https://github.com/nlohmann/json)
 - [libcurl](https://curl.haxx.se/libcurl/)
 - [libarchive](https://www.libarchive.org/)
-- [argp](https://www.gnu.org/software/libc/manual/html_node/Argp.html)
 
 These libraries should be available in your distribution's package manager if they aren't already installed.
 
@@ -30,17 +29,17 @@ At this point *mangadex_fetcher* should be ready to use.
 The program supplies some basic info to help get you started:
 
 ``` bash
-$ mangadex_fetcher -?
 Usage: mangadex_fetcher [OPTION...] URL
 Simple tool for scrapping manga from mangadex.org using their API (https://mangadex.org/api/). Supports writing to plain directories or cbz.
 
   -d, --output-dir=PATH                 Change the output directory for the downloaded chapters to PATH. Defaults to name of manga
   -e, --end-chapter=END_CHAP            Specify the chapter to end fetch at. Use indices from --list-chapters output
-  -g, --group=GROUP                     When multiple groups have translated a chapter, prefer this group's translation
+  -f, --force                           Force overwrites of files. Be careful with this option as it will overwrite files if they share the same name
+  -g, --group=GROUP                     When multiple groups have translated a chapter, prefer this group's translation. Can be specified multiple times to form a priority list
   -l, --language=LANG_CODE              Fetch chapters only matching this language
   -L, --list-chapters                   List all chapters and generate indices to reference them. Use --language and/or --group to narrow down output
-  -O, --one-group                       Get only one version of a chapter, ignoring any duplicates by other groups. Use --language and/or --group to narrow down output
   -q, --quiet                           Suppress all standard output
+  -r, --most-recent                     Get only the most recent version of a chapter. Use --language to narrow down output
   -s, --start-chapter=START_CHAP        Specify the chapter to start fetch from. Use indices from --list-chapters output
   -S, --single-chapter=CHAP             Specify a single chapter to download. Use indices from --list-chapters output
   -t, --output-type=TYPE                Define how output will be saved. TYPE can be dir (default) or cbz
@@ -55,6 +54,8 @@ We can get a listing of chapters to be downloaded by using the `--list-chapters`
 ``` bash
 $ mangadex_fetcher -L https://mangadex.org/title/22369/jahy-sama-wa-kujikenai
 Using API url: https://mangadex.org/api/manga/22369
+Title: Jahy-sama wa Kujikenai!
+
 Idx   | Vol       | Chap       | Group                | Lang   | Title
 ========================================================================================================================
 00000 |         0 |       0000 | ScarlettScans        | gb     | Oneshot
@@ -75,6 +76,8 @@ Typically, we're only interested in one language. We can use the `--language` or
 ``` bash
 $ mangadex_fetcher -L -l gb https://mangadex.org/title/22369/jahy-sama-wa-kujikenai
 Using API url: https://mangadex.org/api/manga/22369
+Title: Jahy-sama wa Kujikenai!
+
 Idx   | Vol       | Chap       | Group                | Lang   | Title
 ========================================================================================================================
 00000 |         0 |       0000 | ScarlettScans        | gb     | Oneshot
@@ -105,6 +108,8 @@ We can select one of these groups by using the `--group` or `-g` flag. If we wan
 ``` bash
 $ mangadex_fetcher -L -l gb -g Orchesc/a/ns https://mangadex.org/title/22369/jahy-sama-wa-kujikenai
 Using API url: https://mangadex.org/api/manga/22369
+Title: Jahy-sama wa Kujikenai!
+
 Idx   | Vol       | Chap       | Group                | Lang   | Title
 ========================================================================================================================
 (....)
@@ -115,7 +120,9 @@ Idx   | Vol       | Chap       | Group                | Lang   | Title
 ```
 The conflict is resolved. Unresolved conflicts are not fatal however. If left as before, the chapter will simply be downloaded from both sources as `032 - Orchesc/a/ns` and `032 - Tempor/a/ry scans`.
 
-Other times, we only want one version of the chapter and don't particularly care which scanlator it comes from. In these cases, use the `--one-group` or `-O` option. This will simply take the most recent version of any chapter.
+`--group` can be specified multiple times to produce a priority list where priority is determined by specification order. This will attempt to select the groups with the highest priority first before selecting lower priorities. If no group is found for a chapter, the most recent version of said chapter will be selected.
+
+If we only want one version of the chapter and don't particularly care which scanlator it comes from, we can use the `--most-recent` or `-r` flag. This will simply take the most recent version of any chapter.
 
 Lastly, it is possible to only download a segment of the chapters using `--start-chapter` and `--end-chapter` (or `-s` and `-e` respectively). Using the indices from the left most column, we can specify where we should start and where we should end. This will not affect the listing, but will cause the downloader to skip any chapters that do not fall within this range. Be careful to use the indices and not the actual chapter number as these numbers are NOT equivalent. If only a single chapter is desired, use the `--single-chapter` or `-S` option to specify that chapter. This is equivalent to using `-s` and `-e` with the same index.
 
@@ -125,6 +132,7 @@ Once we have the listing of the chapters we want, it is time to download them. T
 ``` bash
 $ mangadex_fetcher -l gb -g Orchesc/a/ns https://mangadex.org/title/22369/jahy-sama-wa-kujikenai
 Using API url: https://mangadex.org/api/manga/22369
+Title: Jahy-sama wa Kujikenai!
 
 Fetching chapter: 0000 - ScarlettScans
 Downloading: https://s2.mangadex.org/data/9461c2987335e34df739758230c32d3b/p1.jpg -> 000.jpg...   434 kB: OK.
@@ -156,6 +164,7 @@ Combining all these, the following will download all English chapters with a pre
 ``` bash
 $ mangadex_fetcher -l gb -g Orchesc/a/ns -v -t cbz https://mangadex.org/title/22369/jahy-sama-wa-kujikenai
 Using API url: https://mangadex.org/api/manga/22369
+Title: Jahy-sama wa Kujikenai!
 
 Fetching chapter: 0000 - ScarlettScans
 Downloading: https://s2.mangadex.org/data/9461c2987335e34df739758230c32d3b/p1.jpg -> 000.jpg...   434 kB: OK.
@@ -183,7 +192,7 @@ Packaging volume: 00
 Finished download of title 'Jahy-sama wa Kujikenai!'.
 ```
 
-Finally, it should be noted that none of the above operations will overwrite any existing data. To force a redownload or a rebuild of the `.cbz` archives, delete the files which need to be replaced manually.
+Finally, it should be noted that none of the above operations will overwrite any existing data. To force a redownload or a rebuild of the `.cbz` archives, use the `--force` or `-f` flag to overwrite. Be careful with this option however as it will clobber any files with conflicting names. This is unlikely but please ensure that your data is not in the line of fire before using.
 
 ### Miscellaneous Topics
 ---
