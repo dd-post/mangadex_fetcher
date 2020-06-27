@@ -74,7 +74,7 @@ nlohmann::json fetch_json(std::string url) {
     return j;
 }
 
-int scrape_image(std::string url, std::string filename) {
+int scrape_image(std::string url, std::string filename, bool overwrite) {
     FILE* fptr;
     bool ret = 0;
     CURL* handle;
@@ -83,7 +83,7 @@ int scrape_image(std::string url, std::string filename) {
 
     // If file exists, don't bother redownloading it.
     if (!stat(filename.c_str(), &stat_buf)) {
-        if (stat_buf.st_size != 0) {
+        if (stat_buf.st_size != 0 && !overwrite) {
             printf(": Skipping '%s': file already exists.\n", filename.c_str());
             return 1;
         }
@@ -117,7 +117,7 @@ int scrape_image(std::string url, std::string filename) {
 }
 
 
-bool scrape_chapter(nlohmann::json& j) {
+bool scrape_chapter(nlohmann::json& j, bool overwrite) {
     std::string chap_hash   = j["hash"];
     std::string chap_server = j["server"];
     nlohmann::json pg_array = j["page_array"];
@@ -140,7 +140,7 @@ bool scrape_chapter(nlohmann::json& j) {
         // Try to scrape 5 times before moving on.
         int ret = -1;
         for (int j = 0; j < 5; j++) {
-            ret = scrape_image(image_url, fn);
+            ret = scrape_image(image_url, fn, overwrite);
             if (ret >= 0) break;
         }
 
@@ -226,7 +226,7 @@ void scrape_title(nlohmann::json& j, arg_struct& as) {
             nlohmann::json chap_json = fetch_json(chap_api);
 
             // Mark that something was downloaded to trigger rebuild of archives.
-            if (scrape_chapter(chap_json)) j["successful_dl"] = true;
+            if (scrape_chapter(chap_json, as.force)) j["successful_dl"] = true;
 
             chdir("..");
         }

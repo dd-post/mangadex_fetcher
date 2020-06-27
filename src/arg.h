@@ -26,6 +26,7 @@ struct arg_struct {
     bool by_volume = false;
     bool valid = false;
     bool one_scan = false;
+    bool force = false;
 };
 
 const struct argp_option arg_options[] = {
@@ -38,10 +39,11 @@ const struct argp_option arg_options[] = {
   //{"volume-format",   'f', "FORMAT",      0,  "Alter the format of output name when saving as a volume. See --help format for more details",                      0},
   //{"chapter-format",  'c', "FORMAT",      0,  "Alter the format of output name when saving as a chapter. See --help format for more details",                     0},
     {"language",        'l', "LANG_CODE",   0,  "Fetch chapters only matching this language",                                                                       0},
-    {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation. Can be specified multiple times to form a a priority list.", 0},
+    {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation. Can be specified multiple times to form a priority list", 0},
     {"volume",          'v', nullptr,       0,  "Write out chapters in groups by volume",                                                                           0},
     {"quiet",           'q', nullptr,       0,  "Suppress all standard output",                                                                                     0},
-    {"one-group",       'O', nullptr,       0,  "Get only one version of a chapter, ignoring any duplicates by other groups. Use --language and/or --group to narrow down output", 0},
+    {"one-group",       'O', nullptr,       0,  "Get only the most recent version of a chapter. Use --language to narrow down output",                              0},
+    {"force",           'f', nullptr,       0,  "Force overwrites of files. Be careful with this option as it will overwrite files if they share the same name",    0},
   //{"dry-run",         'D', nullptr,       0,  "Perform a dry run to display what directories will be created",                                                    0},
   //{"keep-files",      'k', nullptr,       0,  "Keep any temporary files",                                                                                         0}, // TODO: deleting anything is a potential hazard.
     { 0 }

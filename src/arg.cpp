@@ -10,7 +10,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
     switch (key) {
         case 's': {
             if (as->start_chap != -1) {
-                pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
+                pquit(128, "Chapter operations are single use. Please remove the extra specifications.\n");
             }
 
             char* endptr;
@@ -26,7 +26,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
         }
         case 'e': {
             if (as->end_chap != -1) {
-                pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
+                pquit(128, "Chapter operations are single use. Please remove the extra specifications.\n");
             }
 
             char* endptr;
@@ -42,7 +42,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
         }
         case 'S': {
             if (as->start_chap != -1) {
-                pquit(128, "--single-chapter and other chapter operations are mutually exclusive. Please remove one of these options.\n");
+                pquit(128, "Chapter operations are single use. Please remove the extra specifications.\n");
             }
 
             char* endptr;
@@ -104,6 +104,10 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
         }
         case 'O': {
             as->one_scan = true;
+            break;
+        }
+        case 'f': {
+            as->force = true;
             break;
         }
 

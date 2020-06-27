@@ -49,7 +49,7 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
                         for (int j = i - 1; j >= 0; j--) {
                             if (as.groups[j] == prev_group) {
                                 match = false;
-                            };
+                            }
                         }
 
                         break;
@@ -89,6 +89,29 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
         sorted[chap][jit.key()] = jit.value();
         chap_count++;
     }
+
+    // Warn the user if a group being used was not specified by the user.
+    /*
+    if (!as.groups.empty()) {
+        for (auto jit : sorted.items()) {
+            nlohmann::json chap_json = jit.value().front();
+            bool found_group = false;
+
+            for (std::string group : as.groups) {
+                if (group == chap_json["group_name"]) {
+                    found_group = true;
+                    break;
+                }
+            }
+
+            if (found_group) continue;
+
+            printf("Note: using unrequested group '%s' to fulfill chapter %s.\n", chap_json["group_name"].get<std::string>().c_str(), jit.key().c_str());
+        }
+
+        printf("\n");
+    }
+    */
 
     j["count"] = chap_count;
     j["sorted"] = sorted;

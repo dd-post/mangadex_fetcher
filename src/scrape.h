@@ -6,10 +6,10 @@
 nlohmann::json fetch_json(std::string url);
 
 // Get an image with curl. Filename is local to current directory, so chdir() there first!
-int scrape_image(std::string url, std::string filename);
+int scrape_image(std::string url, std::string filename, bool overwrite);
 
 // Get a full chapter from its Json.
-bool scrape_chapter(nlohmann::json& j);
+bool scrape_chapter(nlohmann::json& j, bool overwrite);
 
 // Get a full manga from its Json.
 void scrape_title(nlohmann::json& j, struct arg_struct& as);

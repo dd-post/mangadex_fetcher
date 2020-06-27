@@ -40,6 +40,8 @@ int main(int argc, char* argv[]) {
     std::replace(manga_title.begin(), manga_title.end(), '/', '_');
     j["manga"]["title"] = manga_title;
 
+    printf("Title: %s\n\n", manga_title.c_str());
+
     if (parsed_args.list_chap) {
         print_chapters(j, parsed_args);
         goto cleanup;
