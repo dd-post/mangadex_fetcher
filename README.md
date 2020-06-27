@@ -4,7 +4,7 @@ A simple tool for scrapping from mangadex.org using their [API](https://mangadex
 
 ### Building
 ---
-*mangadex_fetcher* requires standard `c++17` and 4 dependencies:
+*mangadex_fetcher* requires standard `c++17` and 3 dependencies:
 
 - [nlohmann::json](https://github.com/nlohmann/json)
 - [libcurl](https://curl.haxx.se/libcurl/)
