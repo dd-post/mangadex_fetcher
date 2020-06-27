@@ -30,6 +30,44 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
 
         // Match language / group.
         if (!as.lang_code.empty() && lang != as.lang_code) continue;
+
+        if (!as.groups.empty()) {
+            bool match = false;
+
+            for (int i = 0; i < as.groups.size(); i++) {
+                std::string match_group = as.groups[i];
+
+                // If the chapter to insert matches one of our groups, check any previously inserted
+                // versions to determine if they have a higher priority than this chapter. If this
+                // chapter has priority, then remove the previous selection and select this one.
+                // If this chapter has lower priority, then skip selection.
+                if (match_group == group) {
+                    if (sorted.contains(chap)) {
+                        std::string prev_group = sorted[chap].front()["group_name"];
+                        for (int j = i; j >= 0; j--) {
+                            if (as.groups[j] == prev_group) break;
+                        }
+                    }
+
+                    match = true;
+                    break;
+                }
+            }
+
+            if (!sorted.contains(chap)) match = true;
+
+
+            if (match) {
+                if (sorted.contains(chap)) sorted.erase(chap);
+            }
+            else continue;
+        }
+        else if (as.one_scan) {
+            if (sorted.contains(chap)) sorted.erase(chap);
+        }
+
+
+        /*
         if (!as.group.empty()) {
             // Only insert a non-perfered group if our list does not yet include this chapter.
             if (as.group != group && sorted.contains(chap)) continue;
@@ -43,6 +81,7 @@ bool sort_chapters(nlohmann::json& j, struct arg_struct& as) {
         else if (as.one_scan) {
             if (sorted.contains(chap)) sorted.erase(chap);
         }
+        */
 
         // If title is empty, replace it with a place holder.
         if (jit.value()["title"].get<std::string>().empty()) {

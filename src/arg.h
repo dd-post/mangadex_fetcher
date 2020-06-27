@@ -3,6 +3,7 @@
 
 #include <argp.h>
 #include <string>
+#include <vector>
 
 // The default 80 cols of argp is a bit limiting. If user hasn't setup their own
 // ARGP_HELP_FMT variable, change it to be wider. Will not replace if already set.
@@ -21,7 +22,7 @@ struct arg_struct {
     std::string output_path;
     std::string output_type;
     std::string lang_code;
-    std::string group;
+    std::vector<std::string> groups;
     bool by_volume = false;
     bool valid = false;
     bool one_scan = false;
@@ -37,7 +38,7 @@ const struct argp_option arg_options[] = {
   //{"volume-format",   'f', "FORMAT",      0,  "Alter the format of output name when saving as a volume. See --help format for more details",                      0},
   //{"chapter-format",  'c', "FORMAT",      0,  "Alter the format of output name when saving as a chapter. See --help format for more details",                     0},
     {"language",        'l', "LANG_CODE",   0,  "Fetch chapters only matching this language",                                                                       0},
-    {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation",                                  0},
+    {"group",           'g', "GROUP",       0,  "When multiple groups have translated a chapter, prefer this group's translation. Can be specified multiple times to form a a priority list.", 0},
     {"volume",          'v', nullptr,       0,  "Write out chapters in groups by volume",                                                                           0},
     {"quiet",           'q', nullptr,       0,  "Suppress all standard output",                                                                                     0},
     {"one-group",       'O', nullptr,       0,  "Get only one version of a chapter, ignoring any duplicates by other groups. Use --language and/or --group to narrow down output", 0},

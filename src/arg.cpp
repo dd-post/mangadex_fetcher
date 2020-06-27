@@ -91,11 +91,7 @@ error_t parse_opt(int key, char* arg, argp_state* state) {
             break;
         }
         case 'g': {
-            if (!as->group.empty()) {
-                pquit(128, "--group has be specified two or more times. Please remove the extra specifications.\n");
-            }
-
-            as->group = std::string(arg);
+            as->groups.push_back(std::string(arg));
             break;
         }
         case 'v': {
