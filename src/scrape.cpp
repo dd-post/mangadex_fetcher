@@ -59,6 +59,9 @@ nlohmann::json fetch_json(std::string url) {
     dl_chunk.size = 0;
 
     handle = curl_easy_init();
+    // Abort if slower than 30 bytes/sec for 60 seconds
+    curl_easy_setopt(handle, CURLOPT_LOW_SPEED_TIME, 60L);
+    curl_easy_setopt(handle, CURLOPT_LOW_SPEED_LIMIT, 30L);
     curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, &write_mem_callback);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void*)(&dl_chunk));
@@ -76,7 +79,7 @@ nlohmann::json fetch_json(std::string url) {
 
 int scrape_image(std::string url, std::string filename, bool overwrite) {
     FILE* fptr;
-    bool ret = 0;
+    int ret = 0;
     CURL* handle;
     CURLcode cret;
     struct stat stat_buf;
@@ -95,6 +98,9 @@ int scrape_image(std::string url, std::string filename, bool overwrite) {
 
     handle = curl_easy_init();
 
+    // Abort if slower than 30 bytes/sec for 60 seconds
+    curl_easy_setopt(handle, CURLOPT_LOW_SPEED_TIME, 60L);
+    curl_easy_setopt(handle, CURLOPT_LOW_SPEED_LIMIT, 30L);
     curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
     curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION, &progress_callback);
     curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L);
@@ -105,6 +111,7 @@ int scrape_image(std::string url, std::string filename, bool overwrite) {
 
     if (cret != CURLE_OK) {
         printf(": curl_easy_perform() failed: %s\n", curl_easy_strerror(cret));
+        remove(filename.c_str());
         ret = -1;
     }
 
@@ -135,14 +142,20 @@ bool scrape_chapter(nlohmann::json& j, bool overwrite) {
         fn.replace(0, fn.find('.'), pg_num);
 
         //printf("Downloading: %s -> %s... ----- kB", image_url.c_str(), fn.c_str());
-        printf("Downloading: %80.80s%s -> %s ----- kB", image_url.c_str(), (image_url.length() > 80) ? "..." : "", fn.c_str());
+        printf("Downloading: %.80s%s -> %s ----- kB", image_url.c_str(), (image_url.length() > 80) ? "..." : "", fn.c_str());
         fflush(stdout);
 
         // Try to scrape 5 times before moving on.
-        int ret = -1;
-        for (int j = 0; j < 5; j++) {
-            ret = scrape_image(image_url, fn, overwrite);
-            if (ret >= 0) break;
+        int ret = scrape_image(image_url, fn, overwrite);
+
+        if (ret == -1) {
+            for (int j = 1; j < 5; j++) {
+                printf("Retrying (attempt %d of 5)...\n", j + 1);
+                printf("Downloading: %.80s%s -> %s ----- kB", image_url.c_str(), (image_url.length() > 80) ? "..." : "", fn.c_str());
+                fflush(stdout);
+                ret = scrape_image(image_url, fn, overwrite);
+                if (ret >= 0) break;
+            }
         }
 
         if (ret == 0) {
@@ -153,7 +166,7 @@ bool scrape_chapter(nlohmann::json& j, bool overwrite) {
             was_dl = true;
         }
         else if (ret == -1) {
-            pquit(128, "\nFailed to get %s, Mangadex might be down. Please try again later.\n\n", image_url.c_str());
+            pquit(128, "\nFailed to get '%s'. Mangadex might be down, please try again later.\n\n", fn.c_str());
         }
 
         i++;
