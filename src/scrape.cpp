@@ -68,8 +68,15 @@ nlohmann::json fetch_json(std::string url) {
 
     cret = curl_easy_perform(handle);
 
-    if (cret != CURLE_OK) printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(cret));
-    else j = nlohmann::json::parse((char*)dl_chunk.mem);
+    //printf("%s\n", (char*)dl_chunk.mem);
+
+    try {
+        if (cret != CURLE_OK) printf("curl_easy_perform() failed: %s\n", curl_easy_strerror(cret));
+        else j = nlohmann::json::parse((char*)dl_chunk.mem);
+    } catch(nlohmann::detail::parse_error) {
+        pquit(128, "Failed to parse JSON. MangaDex is likely having issues; "
+                   "wait a while and try again. If the problem persists after the site is back up, please file a bug report.\n");
+    }
 
     curl_easy_cleanup(handle);
     free(dl_chunk.mem);
