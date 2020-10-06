@@ -26,27 +26,15 @@ At this point *mangadex_fetcher* should be ready to use.
 
 ### Usage
 ---
-The program supplies some basic info to help get you started:
+
+#### Simple Example: Downloading all English Chapters
+While *mangadex_fetcher* has a number of features, this is likely the main use-case:
 
 ``` bash
-Usage: mangadex_fetcher [OPTION...] URL
-Simple tool for scrapping manga from mangadex.org using their API (https://mangadex.org/api/). Supports writing to plain directories or cbz.
-
-  -d, --output-dir=PATH                 Change the output directory for the downloaded chapters to PATH. Defaults to name of manga
-  -e, --end-chapter=END_CHAP            Specify the chapter to end fetch at. Use indices from --list-chapters output
-  -f, --force                           Force overwrites of files. Be careful with this option as it will overwrite files if they share the same name
-  -g, --group=GROUP                     When multiple groups have translated a chapter, prefer this group's translation. Can be specified multiple times to form a priority list
-  -l, --language=LANG_CODE              Fetch chapters only matching this language
-  -L, --list-chapters                   List all chapters and generate indices to reference them. Use --language and/or --group to narrow down output
-  -q, --quiet                           Suppress all standard output
-  -r, --most-recent                     Get only the most recent version of a chapter. Use --language to narrow down output
-  -s, --start-chapter=START_CHAP        Specify the chapter to start fetch from. Use indices from --list-chapters output
-  -S, --single-chapter=CHAP             Specify a single chapter to download. Use indices from --list-chapters output
-  -t, --output-type=TYPE                Define how output will be saved. TYPE can be dir (default) or cbz
-  -v, --volume                          Write out chapters in groups by volume
-  -?, --help                            Give this help list
-      --usage                           Give a short usage message
+$ mangadex_fetcher -l gb -r [url]
 ```
+
+This will download all chapters for a title in English, using only the most recent version of said chapter. Below gives details on the more complicated use cases.
 
 #### Example: Generating a Listing
 We can get a listing of chapters to be downloaded by using the `--list-chapters` or `-L` option:
