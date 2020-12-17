@@ -14,12 +14,12 @@ all: $(PROG)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(PROG): $(OBJ)
-	$(CXX) $(LINKFLAGS) $(CXXFLAGS) -o $@ $^
-
-.PHONY: clean
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LINKFLAGS)
 
 clean:
 	rm -rf $(PROG) $(OBJ) $(OBJ:.o=.d)
 
+install: $(PROG)
+	cp mangadex_fetcher /usr/local/bin/
 
--include $(OBJ:.o=.d)
+.PHONY: clean

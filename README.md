@@ -12,12 +12,14 @@ A simple tool for scrapping from mangadex.org using their [API](https://mangadex
 
 These libraries should be available in your distribution's package manager if they aren't already installed.
 
-Once the dependencies are squared away, do the dance:
+There are two ways to build: using [CMake](https://cmake.org) or a standard Makefile. The Makefile is simply provided for convenience, the preferred way to build/install is through CMake as it is a bit more future-proof and provides an actual configuration script. Using CMake:
 
 ``` bash
 $ git clone https://github.com/dd-post/mangadex_fetcher.git
 $ cd mangadex_fetcher
-$ ./configure
+$ mkdir build
+$ cd build
+$ cmake ../
 $ make
 $ make install
 ```
